@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi Laporan Kinerja Harian</title>
+  <meta name="theme-color" content="#0b1220">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="booting">
+  <div id="netBanner" class="netBanner offline hidden">Koneksi terputus. Draft lokal tetap aman.</div>
+
+  <div id="bootScreen">
+    <div class="bootCard">
+      <div class="bootTitle">Memulihkan sesi...</div>
+      <div class="bootSub">Mohon tunggu sebentar</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="loginView" class="card hidden">
+      <div class="authHeader">
+        <div class="authTitle">Masuk ke Sistem</div>
+        <div class="authSub">
+          Kelola Laporan Kinerja Harian dengan tampilan yang lebih rapi, cepat, dan nyaman digunakan.
+        </div>
+      </div>
+
+      <label for="loginUsername">Username</label>
+      <input id="loginUsername" autocomplete="username" placeholder="Masukkan username">
+
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" autocomplete="current-password" placeholder="Masukkan password">
+
+      <div class="loginBtnRow">
+        <button type="button" id="btnLogin">Masuk</button>
+        <button type="button" class="secondary" id="btnForgot">Lupa Password</button>
+        <button type="button" class="secondary" id="btnRegister">Daftar Akun Baru</button>
+      </div>
+
+      <div id="loginStatus" class="hint"></div>
+    </div>
+
+    <div id="appView" class="hidden">
+      <div class="card">
+        <div class="panelIntro">
+          <div class="meta">
+            <div class="appName">Aplikasi Laporan Kinerja Harian</div>
+            <div class="pageSub" id="whoami"></div>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="secondary" type="button" id="btnInstallPwa">Install App</button>
+            <button class="secondary" type="button" id="btnLogout">Logout</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" id="tabLhk" data-tab="lhk">Penyusunan LKH</div>
+          <div class="tab" id="tabFiles" data-tab="files">Dokumen Saya</div>
+          <div class="tab" id="tabPass" data-tab="pass">Akun</div>
+          <div class="tab hidden" id="tabAdmin" data-tab="admin">Administrasi</div>
+        </div>
+
+        <div class="topQuickRow hidden" id="adminQuickRow">
+          <div class="quickMiniCard">
+            <div class="quickMiniTitle">Inbox Admin Ringkas</div>
+            <div class="quickMiniSub">Notifikasi terbaru ditampilkan di sini agar langsung terlihat tanpa masuk dulu ke section inbox.</div>
+            <div id="adminQuickInbox" class="miniMuted">Belum dimuat.</div>
+          </div>
+          <div class="quickMiniCard">
+            <div class="quickMiniTitle">User Online</div>
+            <div class="quickMiniSub">Menampilkan user yang masih aktif berdasarkan heartbeat sesi.</div>
+            <div id="adminOnlineSummary" class="miniMuted">Belum dimuat.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewLhk" class="card">
+        <h3 style="margin:0 0 6px 0;">Formulir LKH</h3>
+        <div class="pageSub">Lengkapi identitas, periode laporan, preferensi tampilan, lalu buat preview atau export PDF sesuai kebutuhan.</div>
+
+        <div class="toolbarCard">
+          <div class="toolbarRow">
+            <div>
+              <label for="pdfMode">Mode PDF</label>
+              <select id="pdfMode">
+                <option value="auto" selected>Otomatis Fit 1 Halaman</option>
+                <option value="default">Standar</option>
+                <option value="fit1">Fit 1 Halaman</option>
+                <option value="fit1meeting">Fit 1 Halaman Rapat</option>
+                <option value="landscapefit1">Landscape 1 Halaman</option>
+              </select>
+            </div>
+            <div class="btnWrap">
+              <button type="button" id="btnPreview">Generate Preview</button>
+              <button type="button" class="secondary" id="btnDownload">Download PDF</button>
+              <button type="button" class="secondary" id="btnDownloadExcel">Download Excel</button>
+              <button type="button" class="secondary" id="btnPrint">Print</button>
+            </div>
+          </div>
+          <div id="status" class="hint"></div>
+        </div>
+
+        <div class="sectionGroup">
+          <div class="sectionCard open" id="secLhkForm">
+            <button type="button" class="sectionHead" onclick="toggleSection('secLhkForm')">
+              <span class="left">
+                <span class="title">Data Formulir</span>
+                <span class="sub">Lengkapi data pegawai, periode laporan, pengaturan atasan, dan tanda tangan dokumen.</span>
+              </span>
+              <span class="chev">⌄</span>
+            </button>
+            <div class="sectionBody">
+              <div class="row">
+                <div><label for="nama">Nama</label><input id="nama" disabled></div>
+                <div><label for="nip">NIP</label><input id="nip" disabled></div>
+              </div>
+              <div class="row">
+                <div><label for="subBagian">Sub Bagian</label><select id="subBagian"></select></div>
+                <div><label for="jabatan">Jabatan</label><input id="jabatan" placeholder="Masukkan jabatan"></div>
+              </div>
+              <div class="row">
+                <div>
+                  <label for="month">Bulan</label>
+                  <select id="month">
+                    <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option><option value="4">April</option>
+                    <option value="5">Mei</option><option value="6">Juni</option><option value="7">Juli</option><option value="8">Agustus</option>
+                    <option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                  </select>
+                </div>
+                <div><label for="year">Tahun</label><input id="year" type="number" placeholder="Contoh: 2026"></div>
+              </div>
+              <label for="kota">Kota</label><input id="kota" placeholder="Masukkan nama kota">
+              <label for="holidays">Hari Libur Tambahan (Opsional)</label><input id="holidays" placeholder="Contoh: 1 10 17 atau 1,10,17 atau 2026-03-29"><div class="hint">Isi tanggal tambahan bila ada hari libur khusus di luar kalender otomatis.</div>
+              <div class="row">
+                <div><label for="fontOut">Ukuran Font di Luar Tabel</label><select id="fontOut"><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12" selected>12</option><option value="13">13</option><option value="14">14</option></select></div>
+                <div><label for="fontIn">Ukuran Font di Dalam Tabel</label><select id="fontIn"><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12" selected>12</option><option value="13">13</option><option value="14">14</option></select></div>
+              </div>
+              <label for="jabatanPembuat">Jabatan Pembuat</label><input id="jabatanPembuat" disabled><div class="hint">Terisi otomatis mengikuti jabatan yang Anda input.</div>
+              <label for="jabatanAtasan">Jabatan Atasan</label><select id="jabatanAtasan"></select>
+              <div class="row">
+                <div><label for="namaAtasan">Nama Atasan</label><select id="namaAtasan"></select></div>
+                <div><label for="nipAtasan">NIP Atasan</label><input id="nipAtasan" disabled><div class="hint">NIP atasan akan terisi otomatis berdasarkan data yang tersimpan.</div></div>
+              </div>
+              <label for="signatureMode">Mode Tanda Tangan</label>
+              <select id="signatureMode"><option value="text" selected>Teks biasa</option><option value="barcode">Barcode / QR otomatis</option><option value="image">Upload gambar tanda tangan</option></select>
+              <div class="hint">Pilih mode barcode untuk QR otomatis, atau upload gambar jika ingin memakai tanda tangan hasil scan.</div>
+              <div id="sigUploadRow" class="row hidden" style="margin-top:10px;">
+                <div><label for="sigPembuatFile">Upload Tanda Tangan Pembuat (PNG/JPG)</label><input id="sigPembuatFile" type="file" accept="image/*"></div>
+                <div><label for="sigAtasanFile">Upload Tanda Tangan Atasan (PNG/JPG)</label><input id="sigAtasanFile" type="file" accept="image/*"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sectionCard" id="secLhkColors">
+            <button type="button" class="sectionHead" onclick="toggleSection('secLhkColors')"><span class="left"><span class="title">Preferensi Tampilan Dokumen</span><span class="sub">Atur warna dokumen secara visual agar preview dan hasil PDF lebih enak dilihat.</span></span><span class="chev">⌄</span></button>
+            <div class="sectionBody">
+              <div class="pageSub" style="margin-top:12px;">Atur tampilan warna dokumen dengan cara yang lebih visual. Warna yang dipilih akan langsung dipakai saat preview dan export PDF.</div>
+              <div class="colorGrid">
+                <div class="colorItem"><div class="colorPreview" id="previewColorHeader" style="background:#dbeafe;"></div><div class="colorLabel">Warna Header Tabel</div><div class="colorSub">Dipakai untuk baris judul kolom tabel.</div><label for="colorHeader">Pilih warna</label><input id="colorHeader" type="color" value="#dbeafe"></div>
+                <div class="colorItem"><div class="colorPreview" id="previewColorDateCol" style="background:#f3f4f6;"></div><div class="colorLabel">Warna Kolom Hari / Tanggal</div><div class="colorSub">Mewarnai kolom tanggal agar lebih mudah dibaca.</div><label for="colorDateCol">Pilih warna</label><input id="colorDateCol" type="color" value="#f3f4f6"></div>
+                <div class="colorItem"><div class="colorPreview" id="previewColorOffRow" style="background:#fef3c7;"></div><div class="colorLabel">Warna Hari Libur / Akhir Pekan</div><div class="colorSub">Dipakai saat opsi sorot hari non-kerja diaktifkan.</div><label for="colorOffRow">Pilih warna</label><input id="colorOffRow" type="color" value="#fef3c7"></div>
+              </div>
+              <div class="row" style="margin-top:14px;"><div><label for="enableOffHighlight">Sorot Hari Libur / Akhir Pekan</label><select id="enableOffHighlight"><option value="no" selected>Tidak disorot</option><option value="yes">Sorot otomatis</option></select></div><div><label for="showSubHead">Baris Sub-Header (a, b, c, d, e)</label><select id="showSubHead"><option value="yes" selected>Tampilkan</option><option value="no">Sembunyikan</option></select></div></div>
+              <div class="row" style="margin-top:14px;"><div><label for="hideSaturday">Hari Sabtu</label><select id="hideSaturday"><option value="no" selected>Tampilkan</option><option value="yes">Sembunyikan</option></select></div><div><label for="hideSunday">Hari Minggu</label><select id="hideSunday"><option value="no" selected>Tampilkan</option><option value="yes">Sembunyikan</option></select></div></div>
+              <div class="row" style="margin-top:14px;"><div><label for="showKet">Kolom Keterangan (Ket.)</label><select id="showKet"><option value="yes" selected>Tampilkan</option><option value="no">Sembunyikan</option></select></div></div>
+            </div>
+          </div>
+
+          <div class="sectionCard" id="secLhkDraft">
+            <button type="button" class="sectionHead" onclick="toggleSection('secLhkDraft')"><span class="left"><span class="title">Draft</span><span class="sub">Simpan draft, buka kembali data sebelumnya, lalu lanjutkan pekerjaan tanpa mengulang dari awal.</span></span><span class="chev">⌄</span></button>
+            <div class="sectionBody">
+              <div class="row"><div><label for="draftSelect">Daftar Draft</label><select id="draftSelect"></select><div class="hint">Setiap draft disimpan berdasarkan bulan dan tahun laporan.</div></div><div><label>&nbsp;</label><button type="button" class="secondary" id="btnRefreshDrafts">Refresh Draft</button></div></div>
+              <div class="row"><button type="button" class="secondary" id="btnSaveDraft">Simpan Draft</button><button type="button" id="btnLoadDraft">Muat Draft</button></div>
+              <button type="button" class="danger" id="btnDeleteDraft">Hapus Draft Terpilih</button>
+            </div>
+          </div>
+
+          <div class="sectionCard open" id="secLhkPreview">
+            <button type="button" class="sectionHead" onclick="toggleSection('secLhkPreview')"><span class="left"><span class="title">Preview</span><span class="sub">Tinjau hasil dokumen sebelum diunduh agar susunan tabel dan isi laporan sudah sesuai.</span></span><span class="chev">⌄</span></button>
+            <div class="sectionBody"><div class="previewBox"><iframe id="preview" loading="lazy"></iframe></div><div class="mobileActionBar"><button type="button" id="btnPreviewMobile">Preview</button><button type="button" class="secondary" id="btnDownloadMobile">PDF</button></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewFiles" class="card hidden">
+        <h3 style="margin:0 0 6px 0;">Dokumen Saya</h3><div class="pageSub">Lihat dokumen yang sudah tersimpan, lalu buka folder kerja pribadi Anda kapan saja.</div>
+        <div class="sectionGroup"><div class="sectionCard open" id="secFilesList"><button type="button" class="sectionHead" onclick="toggleSection('secFilesList')"><span class="left"><span class="title">Daftar Dokumen</span><span class="sub">Perbarui daftar file dan buka folder pribadi untuk melihat hasil kerja yang sudah tersimpan.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="actionRow" style="margin-top:12px;"><button type="button" id="btnRefreshFiles">Refresh List</button><button type="button" class="secondary" id="btnOpenFolder">Buka Folder Saya</button></div><div class="hint" id="filesStatus"></div><div id="filesTable" style="margin-top:10px;"></div></div></div></div>
+      </div>
+
+      <div id="viewPass" class="card hidden">
+        <h3 style="margin:0 0 6px 0;">Akun</h3><div class="pageSub">Kelola upload LHK, ubah password, dan perbarui email akun dari satu tempat.</div>
+        <div class="sectionGroup">
+          <div class="sectionCard open" id="secUploadLhk"><button type="button" class="sectionHead" onclick="toggleSection('secUploadLhk')"><span class="left"><span class="title">Unggah LHK (PDF)</span><span class="sub">Pilih folder tujuan, lalu unggah file PDF LHK ke lokasi yang sudah disediakan.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="hint">Pastikan file yang diunggah sudah berbentuk PDF.</div><label for="uploadFolder">Folder Tujuan</label><select id="uploadFolder"></select><label for="uploadFile">File PDF</label><input id="uploadFile" type="file" accept="application/pdf"><button type="button" id="btnUploadLhk">Upload LHK</button><div class="hint" id="uploadStatus"></div></div></div>
+          <div class="sectionCard" id="secChangePassword"><button type="button" class="sectionHead" onclick="toggleSection('secChangePassword')"><span class="left"><span class="title">Ganti Password</span><span class="sub">Ubah password akun secara mandiri untuk menjaga keamanan akses.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><label for="oldPass">Password Lama</label><input id="oldPass" type="password" placeholder="Masukkan password lama"><label for="newPass">Password Baru</label><input id="newPass" type="password" placeholder="Masukkan password baru"><button type="button" id="btnChangePass">Simpan Password</button><div class="hint" id="passStatus"></div></div></div>
+          <div class="sectionCard" id="secChangeEmail"><button type="button" class="sectionHead" onclick="toggleSection('secChangeEmail')"><span class="left"><span class="title">Ganti Email</span><span class="sub">Perbarui alamat email agar notifikasi dan proses reset password tetap berjalan normal.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><label for="newEmail">Email Baru</label><input id="newEmail" type="email" placeholder="user@domain.com"><button type="button" class="secondary" id="btnChangeEmail">Simpan Email</button><div class="hint" id="emailStatus"></div></div></div>
+        </div>
+      </div>
+
+      <div id="viewAdmin" class="card hidden">
+        <h3 style="margin:0 0 6px 0;">Administrasi</h3><div class="pageSub">Kelola folder upload, inbox admin, pengguna, dan log aktivitas aplikasi.</div>
+        <div class="sectionGroup">
+          <div class="sectionCard open" id="secAdminUpload"><button type="button" class="sectionHead" onclick="toggleSection('secAdminUpload')"><span class="left"><span class="title">Folder Upload LHK</span><span class="sub">Atur root folder upload dan buat folder tujuan yang akan dipilih pengguna saat mengunggah file.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="hint">Atur folder root upload dan kelola subfolder tujuan upload pengguna dari sini.</div><div class="row"><div><label for="uploadRootId">Upload Root Folder ID</label><input id="uploadRootId" placeholder="Masukkan folder ID root upload"><div class="hint" id="uploadRootHint"></div></div><div><label>&nbsp;</label><button type="button" class="secondary" id="btnAdminSaveUploadRoot">Simpan Root</button></div></div><div class="row" style="margin-top:10px;"><div><label for="newUploadFolderName">Nama Subfolder Baru</label><input id="newUploadFolderName" placeholder="Contoh: LHK Maret 2026"></div><div><label>&nbsp;</label><button type="button" id="btnAdminCreateUploadFolder">Buat Folder</button></div></div><button type="button" class="secondary" id="btnAdminRefreshUploadFolders">Refresh Daftar Folder</button><div class="hint" id="adminUploadStatus"></div><div id="adminUploadFoldersTable" style="margin-top:10px;"></div></div></div>
+          <div class="sectionCard" id="secAdminNotif"><button type="button" class="sectionHead" onclick="toggleSection('secAdminNotif')"><span class="left"><span class="title">Inbox Admin</span><span class="sub">Pantau notifikasi unggahan dan aktivitas penting yang masuk ke administrator.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="hint">Gunakan inbox ini untuk melihat unggahan masuk dan menandai notifikasi yang sudah ditangani.</div><div class="actionRow" style="margin-top:12px;"><button type="button" class="secondary" id="btnAdminRefreshNotifications">Refresh Inbox</button><button type="button" class="danger" id="btnAdminClearNotifications">Hapus Semua Notif</button></div><div class="hint" id="adminNotifStatus"></div><div id="adminNotifTable" style="margin-top:10px;"></div></div></div>
+          <div class="sectionCard" id="secAdminOnlineUsers"><button type="button" class="sectionHead" onclick="toggleSection('secAdminOnlineUsers')"><span class="left"><span class="title">User Online</span><span class="sub">Lihat siapa saja yang sedang aktif menggunakan aplikasi berdasarkan heartbeat sesi.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="actionRow" style="margin-top:12px;"><button type="button" class="secondary" id="btnAdminRefreshOnlineUsers">Refresh User Online</button></div><div class="hint" id="adminOnlineStatus"></div><div id="adminOnlineUsersTable" style="margin-top:10px;"></div></div></div>
+          <div class="sectionCard" id="secAdminUsers"><button type="button" class="sectionHead" onclick="toggleSection('secAdminUsers')"><span class="left"><span class="title">Manajemen Pengguna</span><span class="sub">Lihat daftar pengguna, tambah akun baru, ubah role, reset password, atau hapus pengguna yang tidak diperlukan.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><button type="button" id="btnAdminLoadUsers">Muat Daftar User</button><div class="hint" id="adminStatus"></div><div id="adminUsersTable" style="margin-top:10px;"></div><div class="miniCard"><h4 style="margin:0 0 6px 0;">Tambah Pengguna</h4><label for="newUserNama">Nama</label><input id="newUserNama" placeholder="Masukkan nama pengguna"><label for="newUserUsername">Username</label><input id="newUserUsername" placeholder="Contoh: user001"><label for="newUserNip">NIP</label><input id="newUserNip" placeholder="Masukkan NIP"><label for="newUserEmail">Email</label><input id="newUserEmail" type="email" placeholder="user@domain.com"><label for="newUserPass">Password</label><input id="newUserPass" type="password" placeholder="Masukkan password awal"><label for="newUserRole">Role</label><select id="newUserRole"><option value="user" selected>user</option><option value="sekretaris">sekretaris</option><option value="admin">admin</option></select><button type="button" id="btnAdminCreateUser">Tambah User</button><div class="hint" style="margin-top:10px;">Aksi reset password dan hapus user tersedia langsung dari tabel daftar pengguna.</div></div></div></div>
+          <div class="sectionCard" id="secAdminLogs"><button type="button" class="sectionHead" onclick="toggleSection('secAdminLogs')"><span class="left"><span class="title">Log Aktivitas</span><span class="sub">Pantau riwayat login, export PDF, upload file, dan aktivitas admin lainnya.</span></span><span class="chev">⌄</span></button><div class="sectionBody"><div class="hint">Menampilkan hingga 500 log terbaru pada antarmuka admin.</div><div class="actionRow" style="margin-top:12px;"><button type="button" class="secondary" id="btnAdminRefreshLogs">Refresh Log</button><button type="button" class="danger" id="btnAdminClearLogs">Hapus Semua Log</button></div><div class="hint" id="adminLogsStatus"></div><div id="adminLogsTable" style="margin-top:10px;"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-card" id="modalCard">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div class="modal-title" id="modalTitle">Informasi</div>
+          <button type="button" class="secondary" id="modalCloseBtn" style="margin-top:0; padding:6px 10px;">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-actions" id="modalActions"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
